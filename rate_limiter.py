@@ -41,8 +41,6 @@ def redis_zset_based_rate_limiter(redis_db, sorted_set_key, logger, seconds,
         c_ts = current_timestamp()
         max_window = seconds
         policies = [(seconds, limit)]
-        # print 'c_ts: %s' % c_ts
-        # print 'policies: %s' % policies
         idx = 0
         while idx < len(args):
             if max_window <= args[idx]:
@@ -57,15 +55,12 @@ def redis_zset_based_rate_limiter(redis_db, sorted_set_key, logger, seconds,
                 c_ts,
                 withscores=True
             )
-            # print 'range_results: %s' % range_results
             num_calls = 0
             for member, score in range_results:
                 parts = member.split(':')
                 num_calls += int(parts[1])
             # add the current call
             num_calls += 1
-            # print 'time_window: %s, limit: %s, num_calls: %s' % (
-            #     time_window_seconds, _limit, num_calls)
             if num_calls > _limit:
                 _enforcer.exceeded = True
             else:
